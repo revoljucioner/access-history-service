@@ -11,7 +11,7 @@ namespace AccessHistoryService.Contracts
     {
         Task<IEnumerable<GetDepartmentEventsCountItemResponse>> GetDepartmentEventsCount(EventType eventType, DateTime timeFrom, DateTime timeTo);
 
-        Task<IEnumerable<RoomInfo>> GetRoomEventsCount(Guid employeeId, EventType eventType);
+        Task<GetRoomEventsCountResponse> GetRoomEventsCount(Guid employeeId, EventType eventType);
 
         Task<IEnumerable<EmployeeInfo>> GetEmployeeEvents(Guid roomId, EventType eventType, DateTime timeFrom, DateTime timeTo);
     }

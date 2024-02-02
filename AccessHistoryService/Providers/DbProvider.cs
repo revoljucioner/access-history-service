@@ -182,7 +182,7 @@ namespace AccessHistoryService.Providers
             }
         }
 
-        public async Task<IEnumerable<RoomInfo>> GetRoomEventsCount(Guid employeeId, EventType eventType)
+        public async Task<GetRoomEventsCountResponse> GetRoomEventsCount(Guid employeeId, EventType eventType)
         {
             using (var context = _dbContextFunc())
             {
@@ -209,7 +209,11 @@ namespace AccessHistoryService.Providers
                     .Select(i => (RoomInfo)i)
                     .ToArray();
 
-                return mostVisitedRooms;
+                return new GetRoomEventsCountResponse
+                {
+                    RoomInfos = mostVisitedRooms,
+                    Count = maxVisits
+                };
             }
         }
 
