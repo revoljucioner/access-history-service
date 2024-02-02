@@ -1,7 +1,9 @@
 ﻿using AccessHistoryService.Contracts;
-using AccessHistoryService.Providers;
 using AccessManager.Models.DataModels;
+using AccessManager.Models.Enum;
 using AccessManager.Models.Requests.AccessHistory;
+using AccessManager.Sso.Attributes;
+using AccessManager.Sso.Attributes.FromClaimAttribute;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -28,7 +30,8 @@ namespace AccessHistoryService.Controllers
         }
 
 
-        [HttpPost("Employee")]
+        [HttpPost("AddEmployee")]
+        [AuthorizeCustom(UserRole.Admin)]
         public async Task<IActionResult> AddEmployee(AddEmployeeRequest request)
         {
             _logger.LogInformation($"Request AddEmployee: '{JsonConvert.SerializeObject(request)}'");
@@ -49,7 +52,8 @@ namespace AccessHistoryService.Controllers
             }
         }
 
-        [HttpGet("Employee")]
+        [HttpGet("GetEmployeeInfo")]
+        [AuthorizeCustom(UserRole.Admin)]
         public async Task<IActionResult> GetEmployee([BindRequired] Guid employeeId)
         {
             _logger.LogInformation($"Request GetEmployee: '{employeeId}'");
@@ -70,7 +74,30 @@ namespace AccessHistoryService.Controllers
             }
         }
 
+        [HttpGet("GetMyEmployeeInfo")]
+        [AuthorizeCustom(UserRole.Staff)]
+        public async Task<IActionResult> GetMyEmployeeInfo([FromClaim("id")] Guid employeeId)
+        {
+            _logger.LogInformation($"Request GetEmployee: '{employeeId}'");
+
+            try
+            {
+                var result = await _provider.GetEmployee(employeeId);
+
+                _logger.LogInformation($"Succesfull GetEmployee request: '{employeeId}'");
+
+                return new ObjectResult(result);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error during 'GetEmployee': '{e.Message}'");
+
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
+        }
+
         [HttpGet("Employees")]
+        [AuthorizeCustom(UserRole.Admin)]
         public async Task<IActionResult> GetEmployees()
         {
             _logger.LogInformation($"Request GetEmployees");
