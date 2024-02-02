@@ -75,8 +75,8 @@ namespace AccessHistoryService.Controllers
         }
 
         [HttpGet("GetMyEmployeeInfo")]
-        [AuthorizeCustom(UserRole.Staff)]
-        public async Task<IActionResult> GetMyEmployeeInfo([FromClaim("id")] Guid employeeId)
+        [AuthorizeCustom(UserRole.Staff, UserRole.Admin)]
+        public async Task<IActionResult> GetMyEmployeeInfo([FromClaim("Id")] Guid employeeId)
         {
             _logger.LogInformation($"Request GetEmployee: '{employeeId}'");
 
