@@ -4,7 +4,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System;
-using System.Net.Http;
 using AccessHistoryService.Providers;
 using AccessManager.Sso;
 using AccessManager.Sso.Extensions;
@@ -66,7 +65,8 @@ namespace AccessHistoryService
             services.AddSingleton<IEmployeeProvider, DbProvider>()
                 .AddSingleton<IDepartmentProvider, DbProvider>()
                 .AddSingleton<IRoomProvider, DbProvider>()
-                .AddSingleton<IEventProvider, DbProvider>();
+                .AddSingleton<IEventProvider, DbProvider>()
+                .AddSingleton<IEventHistoryProvider, DbProvider>();
 
             services.AddAsymmetricAuthentication()
                 .AddClaimBinding();
