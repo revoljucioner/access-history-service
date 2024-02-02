@@ -186,11 +186,15 @@ namespace AccessHistoryService.Providers
         {
             using (var context = _dbContextFunc())
             {
-                var maxVisits = context.Event
+                var maxVisitsByRoom = context.Event
                     .Where(e => e.EmployeeId == employeeId && e.EventTypeId == eventType)
                     .GroupBy(e => e.RoomId)
-                    .Select(i => i.Count())
-                    .Max();
+                    .Select(i => i.Count());
+
+                if (maxVisitsByRoom.Count() == 0)
+                    return new GetRoomEventsCountResponse { RoomInfos = Enumerable.Empty<RoomInfo>()};
+
+                var maxVisitCount = maxVisitsByRoom.Max();
 
                 var mostVisitedRooms = context.Event
                     .Where(e => e.EmployeeId == employeeId && e.EventTypeId == eventType)
@@ -200,7 +204,7 @@ namespace AccessHistoryService.Providers
                         RoomId = group.Key, 
                         Count = group.Count() 
                     })
-                    .Where(i => i.Count == maxVisits)
+                    .Where(i => i.Count == maxVisitCount)
                     .Select(i => i.RoomId)
                     .Join(context.Room,
                         roomId => roomId,
@@ -212,7 +216,7 @@ namespace AccessHistoryService.Providers
                 return new GetRoomEventsCountResponse
                 {
                     RoomInfos = mostVisitedRooms,
-                    Count = maxVisits
+                    Count = maxVisitCount
                 };
             }
         }
