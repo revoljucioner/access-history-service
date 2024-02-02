@@ -228,8 +228,8 @@ namespace AccessHistoryService.Providers
                 var result = context.Event
                     .Where(@event => @event.RoomId == roomId &&
                                 @event.EventTypeId == eventType 
-                                && @event.Time.TimeOfDay > timeFrom.TimeOfDay
-                                && @event.Time.TimeOfDay < timeTo.TimeOfDay)
+                                && @event.Time > timeFrom
+                                && @event.Time < timeTo)
                     .Join(context.Employee, 
                         @event => @event.EmployeeId,
                         employee => employee.Id,

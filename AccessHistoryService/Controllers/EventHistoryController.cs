@@ -75,7 +75,7 @@ namespace AccessHistoryService.Controllers
 
         [HttpGet("GetEmployeeEvents")]
         [AuthorizeCustom(UserRole.Admin)]
-        public async Task<IActionResult> GetEmployeeEvents([BindRequired] Guid roomId, [BindRequired] EventType eventType, [BindRequired][DataType(DataType.Time)] DateTime timeFrom, [BindRequired][DataType(DataType.Time)] DateTime timeTo)
+        public async Task<IActionResult> GetEmployeeEvents([BindRequired] Guid roomId, [BindRequired] EventType eventType, [BindRequired] DateTime timeFrom, [BindRequired] DateTime timeTo)
         {
             _logger.LogInformation($"Request GetEmployeeEvents");
 
