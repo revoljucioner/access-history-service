@@ -8,6 +8,7 @@ using System.Net.Http;
 using AccessHistoryService.Providers;
 using AccessManager.Sso;
 using AccessManager.Sso.Extensions;
+using AccessHistoryService.Contracts;
 
 namespace AccessHistoryService
 {
@@ -62,10 +63,10 @@ namespace AccessHistoryService
                 });
             });
 
-            services.AddSingleton(sp => new HttpClient());
-
-            services.AddSingleton<AccessHistoryManager>();
-            services.AddSingleton<DbProvider>();
+            services.AddSingleton<IEmployeeProvider, DbProvider>()
+                .AddSingleton<IDepartmentProvider, DbProvider>()
+                .AddSingleton<IRoomProvider, DbProvider>()
+                .AddSingleton<IEventProvider, DbProvider>();
 
             services.AddAsymmetricAuthentication()
                 .AddClaimBinding();
