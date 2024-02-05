@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System;
 using AccessHistoryService.Providers;
-using AccessHistoryService.Contracts;
 
 namespace AccessHistoryService
 {
@@ -58,8 +57,6 @@ namespace AccessHistoryService
                     }
                 });
             });
-
-            services.AddSingleton<IEventHistoryProvider, DbProvider2>();
 
             services.AddSingleton<DbProvider>();
         }

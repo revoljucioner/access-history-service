@@ -1,106 +1,164 @@
 ﻿using AccessHistoryService.Contracts;
-using AccessHistoryService.Models.DataModels;
 using AccessHistoryService.Models.Enum;
 using AccessHistoryService.Models.Responses;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace AccessHistoryService.Providers
 {
-    public class DbProvider
+    public class DbProvider : IEventHistoryProvider
     {
-        private readonly Func<DataContext> _dbContextFunc;
+        private readonly string _connectionString;
 
         public DbProvider(IConfiguration configuration)
         {
-            _dbContextFunc = new Func<DataContext>(() => new DataContext(configuration["ConnectionStrings:AccessDatabase"]));
-        }
-        public async Task<IEnumerable<GetDepartmentEventsCountItemResponse>> GetDepartmentEventsCount(EventType eventType, DateTime timeFrom, DateTime timeTo)
-        {
-            using (var context = _dbContextFunc())
-            {
-                var result = (from ev in context.Event
-                         join emp in context.Employee
-                            on ev.EmployeeId equals emp.Id
-                         join dep in context.Department.DefaultIfEmpty()
-                            on emp.DepartmentId equals dep.Id
-                         where ev.EventTypeId == eventType 
-                            && ev.Time.TimeOfDay > timeFrom.TimeOfDay
-                            && ev.Time.TimeOfDay < timeTo.TimeOfDay
-                         group dep by dep.Id into g
-                         orderby g.Count() descending
-                         select new GetDepartmentEventsCountItemResponse
-                         {
-                             Info = (DepartmentInfo)g.First(),
-                             Count = g.Count()
-                         })
-                         .OrderByDescending(i => i.Count)
-                         .ToArray();
-
-                return result;
-            }
+            _connectionString = configuration["ConnectionStrings:AccessDatabase"];
         }
 
-        public async Task<GetRoomEventsCountResponse> GetRoomEventsCount(Guid employeeId, EventType eventType)
+        public async Task<IEnumerable<GetDepartmentEventsCount>> GetDepartmentEventsCount(EventType eventType, DateTime timeFrom, DateTime timeTo)
         {
-            using (var context = _dbContextFunc())
+            var commandText = "select department.id as department_id, department.name as department_name, count(events.id) as count"
+                + " from [dbo].event as events"
+                + " left join employee on events.employee_id = employee.id"
+                + " left join department on employee.department_id = department.id"
+                + " where ((events.event_type_id = @eventType) and (cast(events.time as time) > @timeFrom) and (cast(events.time as time) < @timeTo))"
+                + " group by department.id, department.name"
+                + " order by count desc";
+
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                var maxVisitsByRoom = context.Event
-                    .Where(e => e.EmployeeId == employeeId && e.EventTypeId == eventType)
-                    .GroupBy(e => e.RoomId)
-                    .Select(i => i.Count());
+                SqlCommand command = new SqlCommand(commandText, connection);
 
-                if (maxVisitsByRoom.Count() == 0)
-                    return new GetRoomEventsCountResponse { RoomInfos = Enumerable.Empty<RoomInfo>()};
+                command.Parameters.AddWithValue("@eventType", eventType);
+                command.Parameters.AddWithValue("@timeFrom", timeFrom.TimeOfDay);
+                command.Parameters.AddWithValue("@timeTo", timeTo.TimeOfDay);
 
-                var maxVisitCount = maxVisitsByRoom.Max();
+                connection.Open();
 
-                var mostVisitedRooms = context.Event
-                    .Where(e => e.EmployeeId == employeeId && e.EventTypeId == eventType)
-                    .GroupBy(e => e.RoomId)
-                    .Select(group => new 
-                    { 
-                        RoomId = group.Key, 
-                        Count = group.Count() 
-                    })
-                    .Where(i => i.Count == maxVisitCount)
-                    .Select(i => i.RoomId)
-                    .Join(context.Room,
-                        roomId => roomId,
-                        room => room.Id,
-                        (_, room) => room)
-                    .Select(i => (RoomInfo)i)
-                    .ToArray();
+                SqlDataReader reader = await command.ExecuteReaderAsync();
 
-                return new GetRoomEventsCountResponse
+                var list = new List<GetDepartmentEventsCount>();
+
+                if (reader.HasRows)
                 {
-                    RoomInfos = mostVisitedRooms,
-                    Count = maxVisitCount
-                };
+                    while (reader.Read())
+                    {
+                        var item = new GetDepartmentEventsCount
+                        {
+                            DepartmentId = reader.GetGuid(0),
+                            DepartmentName = reader.GetString(1),
+                            Count = reader.GetInt32(2)
+                        };
+
+                        list.Add(item);
+                    }
+                }
+
+                connection.Close();
+
+                return list;
             }
         }
 
-        public async Task<IEnumerable<EmployeeInfo>> GetEmployeeEvents(Guid roomId, EventType eventType, DateTime timeFrom, DateTime timeTo)
+        public async Task<IEnumerable<GetRoomEventsCount>> GetRoomEventsCount(Guid employeeId, EventType eventType)
         {
-            using (var context = _dbContextFunc())
-            {
-                var result = context.Event
-                    .Where(@event => @event.RoomId == roomId &&
-                                @event.EventTypeId == eventType 
-                                && @event.Time > timeFrom
-                                && @event.Time < timeTo)
-                    .Join(context.Employee, 
-                        @event => @event.EmployeeId,
-                        employee => employee.Id,
-                        (_, employee) => employee)
-                    .Distinct()
-                    .Select(i => (EmployeeInfo)i)
-                    .ToArray();
+            var commandText = "declare @max_events int"
+                + " set @max_events ="
+                + " (select top 1 count(room_id) as count_events"
+                + " from event as events"
+                + " where events.employee_id = @employeeId and events.event_type_id = @eventType"
+                + " group by room_id"
+                + " order by count_events desc)"
 
-                return result;
+                + " select room.id as room_id, room.name as room_name"
+                + " from event as events"
+                + " join room on events.room_id = room.id"
+                + " where events.employee_id = @employeeId and events.event_type_id = @eventType"
+                + " group by room.id, room.name"
+                + " having count(events.id) = @max_events";
+
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                SqlCommand command = new SqlCommand(commandText, connection);
+
+                command.Parameters.AddWithValue("@employeeId", employeeId);
+                command.Parameters.AddWithValue("@eventType", eventType);
+
+                connection.Open();
+
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+
+                var list = new List<GetRoomEventsCount>();
+
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        var item = new GetRoomEventsCount
+                        {
+                            RoomId = reader.GetGuid(0),
+                            RoomName = reader.GetString(1)
+                        };
+
+                        list.Add(item);
+                    }
+                }
+
+                connection.Close();
+
+                return list;
+            }
+        }
+
+        public async Task<IEnumerable<GetEmployeeEvents>> GetEmployeeEvents(Guid roomId, EventType eventType, DateTime timeFrom, DateTime timeTo)
+        {
+            var commandText = "select distinct employee.id, employee.first_name, employee.last_name"
+                + " from event as events"
+                + " join employee on events.employee_id = employee.id"
+                + " where events.room_id = @roomId"
+                + " and events.time < @timeTo"
+                + " and events.time > @timeFrom"
+                + " and events.event_type_id = @eventType";
+
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                SqlCommand command = new SqlCommand(commandText, connection);
+
+                command.Parameters.AddWithValue("@roomId", roomId);
+                command.Parameters.AddWithValue("@eventType", eventType);
+                command.Parameters.AddWithValue("@timeFrom", timeFrom);
+                command.Parameters.AddWithValue("@timeTo", timeTo);
+
+                connection.Open();
+
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+
+                var list = new List<GetEmployeeEvents>();
+
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        var item = new GetEmployeeEvents
+                        {
+                            EmployeeId = reader.GetGuid(0),
+                            FirstName = reader.GetString(1),
+                            LastName = reader.GetString(2)
+                        };
+
+                        list.Add(item);
+                    }
+                }
+
+                connection.Close();
+
+                return list;
             }
         }
     }
