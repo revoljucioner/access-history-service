@@ -1,5 +1,5 @@
 ﻿using AccessHistoryService.Contracts;
-using AccessManager.Models.Enum;
+using AccessHistoryService.Models.Enum;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;

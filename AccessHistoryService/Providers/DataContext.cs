@@ -1,4 +1,4 @@
-﻿using AccessManager.Models.Database;
+﻿using AccessHistoryService.Models.Database;
 using Microsoft.EntityFrameworkCore;
 
 namespace AccessHistoryService.Providers

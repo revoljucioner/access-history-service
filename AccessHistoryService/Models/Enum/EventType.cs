@@ -1,4 +1,4 @@
-﻿namespace AccessManager.Models.Enum
+﻿namespace AccessHistoryService.Models.Enum
 {
     public enum EventType
     {

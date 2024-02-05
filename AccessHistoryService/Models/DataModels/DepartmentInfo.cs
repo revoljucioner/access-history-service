@@ -1,7 +1,8 @@
-﻿using AccessManager.Models.Database;
+﻿using AccessHistoryService.Models.Database;
 using Newtonsoft.Json;
+using System;
 
-namespace AccessManager.Models.DataModels
+namespace AccessHistoryService.Models.DataModels
 {
     public class DepartmentInfo
     {

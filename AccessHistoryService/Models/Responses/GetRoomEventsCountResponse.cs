@@ -1,7 +1,8 @@
-﻿using AccessManager.Models.DataModels;
+﻿using AccessHistoryService.Models.DataModels;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
-namespace AccessManager.Models.Responses
+namespace AccessHistoryService.Models.Responses
 {
     public class GetRoomEventsCountResponse
     {

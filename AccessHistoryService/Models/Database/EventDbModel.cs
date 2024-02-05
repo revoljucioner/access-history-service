@@ -1,7 +1,8 @@
-﻿using AccessManager.Models.Enum;
+﻿using AccessHistoryService.Models.Enum;
+using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace AccessManager.Models.Database
+namespace AccessHistoryService.Models.Database
 {
     [Table("event")]
     public class EventDbModel

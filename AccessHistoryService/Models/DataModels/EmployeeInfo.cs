@@ -1,6 +1,7 @@
-﻿using AccessManager.Models.Database;
+﻿using AccessHistoryService.Models.Database;
+using System;
 
-namespace AccessManager.Models.DataModels
+namespace AccessHistoryService.Models.DataModels
 {
     public class EmployeeInfo
     {

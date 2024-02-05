@@ -1,6 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace AccessManager.Models.Database
+namespace AccessHistoryService.Models.Database
 {
     [Table("department")]
     public class DepartmentDbModel

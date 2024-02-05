@@ -1,7 +1,7 @@
 ﻿using AccessHistoryService.Contracts;
-using AccessManager.Models.DataModels;
-using AccessManager.Models.Enum;
-using AccessManager.Models.Responses;
+using AccessHistoryService.Models.DataModels;
+using AccessHistoryService.Models.Enum;
+using AccessHistoryService.Models.Responses;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;

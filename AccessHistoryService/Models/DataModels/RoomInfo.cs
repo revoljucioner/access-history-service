@@ -1,7 +1,8 @@
-﻿using AccessManager.Models.Database;
+﻿using AccessHistoryService.Models.Database;
 using Newtonsoft.Json;
 
-namespace AccessManager.Models.DataModels
+using System;
+namespace AccessHistoryService.Models.DataModels
 {
     public class RoomInfo
     {

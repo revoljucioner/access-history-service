@@ -1,7 +1,7 @@
-﻿using AccessManager.Models.DataModels;
+﻿using AccessHistoryService.Models.DataModels;
 using Newtonsoft.Json;
 
-namespace AccessManager.Models.Responses
+namespace AccessHistoryService.Models.Responses
 {
     public class GetDepartmentEventsCountItemResponse
     {

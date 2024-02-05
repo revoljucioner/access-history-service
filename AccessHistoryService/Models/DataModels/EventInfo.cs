@@ -1,7 +1,7 @@
-﻿using AccessManager.Models.Database;
-using AccessManager.Models.Enum;
+﻿using AccessHistoryService.Models.Enum;
+using System;
 
-namespace AccessManager.Models.DataModels
+namespace AccessHistoryService.Models.DataModels
 {
     public class EventInfo
     {
