@@ -1,6 +1,5 @@
-﻿using AccessHistoryService.Models.DataModels;
-using AccessHistoryService.Models.Enum;
-using AccessHistoryService.Models.Responses;
+﻿using AccessHistoryService.Models.Enum;
+using AccessHistoryService.Providers;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -9,10 +8,10 @@ namespace AccessHistoryService.Contracts
 {
     public interface IEventHistoryProvider
     {
-        Task<IEnumerable<GetDepartmentEventsCountItemResponse>> GetDepartmentEventsCount(EventType eventType, DateTime timeFrom, DateTime timeTo);
+        Task<IEnumerable<GetDepartmentEventsCount>> GetDepartmentEventsCount(EventType eventType, DateTime timeFrom, DateTime timeTo);
 
-        Task<GetRoomEventsCountResponse> GetRoomEventsCount(Guid employeeId, EventType eventType);
+        Task<IEnumerable<GetRoomEventsCount>> GetRoomEventsCount(Guid employeeId, EventType eventType);
 
-        Task<IEnumerable<EmployeeInfo>> GetEmployeeEvents(Guid roomId, EventType eventType, DateTime timeFrom, DateTime timeTo);
+        Task<IEnumerable<GetEmployeeEvents>> GetEmployeeEvents(Guid roomId, EventType eventType, DateTime timeFrom, DateTime timeTo);
     }
 }

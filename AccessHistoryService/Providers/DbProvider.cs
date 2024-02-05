@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace AccessHistoryService.Providers
 {
-    public class DbProvider : IEventHistoryProvider
+    public class DbProvider
     {
         private readonly Func<DataContext> _dbContextFunc;
 

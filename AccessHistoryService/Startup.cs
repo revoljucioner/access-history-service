@@ -30,7 +30,7 @@ namespace AccessHistoryService
                 {
                     Title = "AccessHistoryService",
                     Version = "v1",
-                    Description = $"**Commit:** *{ThisAssembly.Git.Commit}* \n \r\n **Branch:** *{ThisAssembly.Git.Branch}* \n \r\n **CommitDate:** *{DateTime.Parse(ThisAssembly.Git.CommitDate).ToUniversalTime()}* \n \r\n **StartTimeUTC:** *{DateTime.UtcNow}*",
+                    Description = $"**Commit:** *{ThisAssembly.Git.Commit}* \n " + " **Branch:** *{ThisAssembly.Git.Branch}* \n " + " **CommitDate:** *{DateTime.Parse(ThisAssembly.Git.CommitDate).ToUniversalTime()}* \n " + " **StartTimeUTC:** *{DateTime.UtcNow}*",
                 });
 
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -59,7 +59,9 @@ namespace AccessHistoryService
                 });
             });
 
-            services.AddSingleton<IEventHistoryProvider, DbProvider>();
+            services.AddSingleton<IEventHistoryProvider, DbProvider2>();
+
+            services.AddSingleton<DbProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
