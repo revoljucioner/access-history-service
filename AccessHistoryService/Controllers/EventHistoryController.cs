@@ -1,6 +1,5 @@
 ﻿using AccessHistoryService.Contracts;
 using AccessManager.Models.Enum;
-using AccessManager.Sso.Attributes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -28,7 +27,6 @@ namespace AccessHistoryService.Controllers
         }
 
         [HttpGet("GetDepartmentEventsCount")]
-        [AuthorizeCustom(UserRole.Admin)]
         public async Task<IActionResult> GetDepartmentEventsCount([BindRequired] EventType eventType, [BindRequired][DataType(DataType.Time)] DateTime timeFrom, [BindRequired][DataType(DataType.Time)] DateTime timeTo)
         {
             _logger.LogInformation($"Request GetDepartmentEventsCount");
@@ -52,7 +50,6 @@ namespace AccessHistoryService.Controllers
         }
 
         [HttpGet("GetRoomEventsCount")]
-        [AuthorizeCustom(UserRole.Admin)]
         public async Task<IActionResult> GetRoomEventsCount([BindRequired] Guid employeeId, [BindRequired] EventType eventType)
         {
             _logger.LogInformation($"Request GetRoomEventsCount");
@@ -74,7 +71,6 @@ namespace AccessHistoryService.Controllers
         }
 
         [HttpGet("GetEmployeeEvents")]
-        [AuthorizeCustom(UserRole.Admin)]
         public async Task<IActionResult> GetEmployeeEvents([BindRequired] Guid roomId, [BindRequired] EventType eventType, [BindRequired] DateTime timeFrom, [BindRequired] DateTime timeTo)
         {
             _logger.LogInformation($"Request GetEmployeeEvents");

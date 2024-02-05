@@ -5,8 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System;
 using AccessHistoryService.Providers;
-using AccessManager.Sso;
-using AccessManager.Sso.Extensions;
 using AccessHistoryService.Contracts;
 
 namespace AccessHistoryService
@@ -23,7 +21,6 @@ namespace AccessHistoryService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers()
                 .AddNewtonsoftJson();
 
@@ -62,21 +59,12 @@ namespace AccessHistoryService
                 });
             });
 
-            services.AddSingleton<IEmployeeProvider, DbProvider>()
-                .AddSingleton<IDepartmentProvider, DbProvider>()
-                .AddSingleton<IRoomProvider, DbProvider>()
-                .AddSingleton<IEventProvider, DbProvider>()
-                .AddSingleton<IEventHistoryProvider, DbProvider>();
-
-            services.AddAsymmetricAuthentication()
-                .AddClaimBinding();
+            services.AddSingleton<IEventHistoryProvider, DbProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseMiddleware<CustomAuthenticationMiddleware>();
-
             app.UseDeveloperExceptionPage();
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "AccessHistoryService v1"));

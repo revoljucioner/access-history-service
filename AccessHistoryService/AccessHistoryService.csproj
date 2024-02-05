@@ -6,16 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="public_key.xml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="public_key.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="BackendTestApplicationCore.Core" Version="1.0.3" />
     <PackageReference Include="GitInfo" Version="2.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.11" />
@@ -27,9 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\access-manager-core\AccessManager.Core\AccessManager.Core.csproj" />
     <ProjectReference Include="..\access-manager-core\AccessManager.Models\AccessManager.Models.csproj" />
-    <ProjectReference Include="..\access-manager-core\AccessManager.Sso\AccessManager.Sso.csproj" />
   </ItemGroup>
 
 </Project>
