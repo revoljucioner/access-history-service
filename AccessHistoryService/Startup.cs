@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System;
 using AccessHistoryService.Providers;
+using AccessHistoryService.Contracts;
 
 namespace AccessHistoryService
 {
@@ -58,7 +59,7 @@ namespace AccessHistoryService
                 });
             });
 
-            services.AddSingleton<DbProvider>();
+            services.AddSingleton<IEventHistoryProvider, DbProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
